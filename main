@@ -1806,7 +1806,7 @@ local success, result = pcall(function()
 	})
 end)
 
-if success and result and result.StatusCode == 200 then
+if success and result then
 	local data = HttpService:JSONDecode(result.Body)
 	if data.valid then
 		KeyFound = true
