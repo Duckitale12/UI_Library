@@ -1795,7 +1795,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local KeyFound = false
 				local FoundKey = ''
 				local HttpService = game:GetService("HttpService")
-local userKey = KeyMain.Input.InputBox.Text
+---------
+--[[local userKey = KeyMain.Input.InputBox.Text
 local success, result = pcall(function()
 	return syn and syn.request or http and http.request or request({
 		Url = "https://work.ink/_api/v2/token/isValid/" .. userKey,
@@ -1812,8 +1813,34 @@ if success and result then
 		KeyFound = true
 		FoundKey = userKey
 	end
-end
+end]]
 
+-------
+
+local url = "https://work.ink/_api/v2/token/isValid/" .. token
+
+local response = request({
+    Url = url,
+    Method = "GET",
+    Headers = {
+        ["Content-Type"] = "application/json"
+    }
+})
+
+-- Decode JSON response
+local data = game:GetService("HttpService"):JSONDecode(response.Body)
+
+-- Check if token is valid
+if data.valid then
+KeyFound = true
+FoundKey = userKey
+    print("Token is valid!")
+    print("Created at:", data.info.createdAt)
+    print("Expires after:", data.info.expiresAfter)
+else
+    print("Token is invalid.")
+end
+----------
 				if KeyFound then 
 					TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {BackgroundTransparency = 1}):Play()
 					TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 467, 0, 175)}):Play()
