@@ -1796,7 +1796,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local FoundKey = ''
 				local HttpService = game:GetService("HttpService")
 ---------
---[[local userKey = KeyMain.Input.InputBox.Text
+
+local userKey = KeyMain.Input.InputBox.Text
+--[[
 local success, result = pcall(function()
 	return syn and syn.request or http and http.request or request({
 		Url = "https://work.ink/_api/v2/token/isValid/" .. userKey,
@@ -1817,7 +1819,7 @@ end]]
 
 -------
 
-local url = "https://work.ink/_api/v2/token/isValid/" .. userKey
+local url = "https://work.ink/_api/v2/token/isValid/" .. tostring(userKey)
 
 local response = request({
     Url = url,
