@@ -1817,7 +1817,7 @@ end]]
 
 -------
 
-local url = "https://work.ink/_api/v2/token/isValid/" .. token
+local url = "https://work.ink/_api/v2/token/isValid/" .. userKey
 
 local response = request({
     Url = url,
