@@ -1716,25 +1716,34 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		if isfile and isfile(RayfieldFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension) then
 			local SavedKey = readfile(RayfieldFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension)
-			local url = "https://work.ink/_api/v2/token/isValid/" .. tostring(SavedKey)
 
-			local response = request({
-				Url = url,
-				Method = "GET",
-				Headers = {
-					["Content-Type"] = "application/json"
-				}
-			})
-
-			-- Decode JSON response
-			local data = game:GetService("HttpService"):JSONDecode(response.Body)
-
-			-- Check if token is valid
-			if data.valid then
+			for _, MKey in ipairs(Settings.KeySettings.Key) do -- CHECK FOR PERM KEYS
+				if string.find(readfile(RayfieldFolder.."/Key System".."/"..Settings.KeySettings.FileName..ConfigurationExtension), MKey) then
 					Passthrough = true
-				print("Token is valid!")
-			else
-				print("Expired token saved")
+				end
+			end
+			
+			if Passthrough == false then
+				local url = "https://work.ink/_api/v2/token/isValid/" .. tostring(SavedKey)
+
+				local response = request({
+					Url = url,
+					Method = "GET",
+					Headers = {
+						["Content-Type"] = "application/json"
+					}
+				})
+
+				-- Decode JSON response
+				local data = game:GetService("HttpService"):JSONDecode(response.Body)
+
+				-- Check if token is valid
+				if data.valid then
+					Passthrough = true
+					print("Token is valid!")
+				else
+					print("Expired token saved")
+				end
 			end
 		end
 
@@ -1813,33 +1822,49 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local KeyFound = false
 				local FoundKey = ''
 				local HttpService = game:GetService("HttpService")
+				
 				---------
 				
-				local userKey = KeyMain.Input.InputBox.Text
-
-				local url = "https://work.ink/_api/v2/token/isValid/" .. tostring(userKey)
-
-				local response = request({
-					Url = url,
-					Method = "GET",
-					Headers = {
-						["Content-Type"] = "application/json"
-					}
-				})
-
-				-- Decode JSON response
-				local data = game:GetService("HttpService"):JSONDecode(response.Body)
-
-				-- Check if token is valid
-				if data.valid then
-					KeyFound = true
-					FoundKey = userKey
-					print("Token is valid!")
-					print("Created at:", data.info.createdAt)
-					print("Expires after:", data.info.expiresAfter)
-				else
-					print("Token is invalid.")
+				--- PERM KEYS
+				
+				for _, MKey in ipairs(Settings.KeySettings.Key) do
+					-- stricter key check
+					if KeyMain.Input.InputBox.Text == MKey then
+						KeyFound = true
+						FoundKey = MKey
+					end
 				end
+				
+				---------
+				
+				if KeyFound == false then
+					local userKey = KeyMain.Input.InputBox.Text
+
+					local url = "https://work.ink/_api/v2/token/isValid/" .. tostring(userKey)
+
+					local response = request({
+						Url = url,
+						Method = "GET",
+						Headers = {
+							["Content-Type"] = "application/json"
+						}
+					})
+
+					-- Decode JSON response
+					local data = game:GetService("HttpService"):JSONDecode(response.Body)
+
+					-- Check if token is valid
+					if data.valid then
+						KeyFound = true
+						FoundKey = userKey
+						print("Token is valid!")
+						print("Created at:", data.info.createdAt)
+						print("Expires after:", data.info.expiresAfter)
+					else
+						print("Token is invalid.")
+					end
+				end
+				
 				----------
 				if KeyFound then 
 					TweenService:Create(KeyMain, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {BackgroundTransparency = 1}):Play()
